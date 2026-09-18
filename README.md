@@ -29,7 +29,7 @@
 
 ## Chunking Strategy
 
-**Chunk size:**
+**Chunk size:** 26
 **Overlap:**
 
 <!-- What about YOUR documents made you pick these numbers? Short posts and
