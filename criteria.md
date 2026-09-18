@@ -26,6 +26,8 @@ contains the answer.
 <!-- e.g. "One of my questions is about a topic only two documents mention, so
      I expect that one to be hard." -->
 
+My five questions cover different documents and topics in the campus-life corpus. Four out of five allows one difficult retrieval while still requiring the system to work for most questions.
+
 ---
 
 ## 2. Every answer names a source
@@ -35,6 +37,8 @@ Every answer the system produces names at least one source document.
 **Why this target:**
 <!-- Why all five and not four? What about your setup makes that achievable —
      or what would have to go wrong for it not to be? -->
+
+The system keeps the source filename with each document, so every answer should identify the document that provided its information.
 
 ---
 
@@ -53,6 +57,8 @@ in at least 4 of 5 tries.
 <!-- What did your distances look like when you set the cutoff in Milestone 4?
      Was there a clean gap, or did the two groups overlap? -->
 
+The five out-of-scope questions are unrelated to campus life, so the gate should refuse most of them instead of generating unsupported answers. Four out of five allows one possible error.
+
 ---
 
 ## 4. Something about your chunks
@@ -69,10 +75,13 @@ in at least 4 of 5 tries.
        - "No chunk is shorter than 200 characters, since anything below that
           in my corpus turned out to be a heading with no content under it." -->
 
+At least 4 of 5 sampled chunks should contain complete thoughts and not cut a sentence in half.
+
 
 
 **Why this target:**
 
+The campus-life documents are short and usually contain one complete topic, so the chunks should preserve complete information.
 
 
 ---
@@ -91,7 +100,9 @@ in at least 4 of 5 tries.
 
 **Why this target:**
 
+At least 4 of 5 generated answers should contain the expected phrase from `questions.py`.
 
+Each question has a specific factual answer, such as "six months" or "week six," so the expected phrase gives a clear way to check correctness.
 
 ---
 
