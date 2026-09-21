@@ -121,12 +121,23 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 
 **Question:**
 
+How long does a student account stay active after graduation?
+
 **Answer:**
+
+Your student account stays active for six months after you graduate
+(`admin_wifi_and_accounts.txt`).
+
+**Source:** `admin_wifi_and_accounts.txt`
 
 ```
 ```
 
 **My relevance cutoff:**
+
+I kept the cutoff at **0.6**. The five in-corpus questions had best distances
+from 0.198 to 0.368. The five out-of-scope questions had best distances from
+0.825 to 0.934, so 0.6 sits between the two groups.
 
 <!-- The number you set in config.py, and how you got there.
 
@@ -139,7 +150,16 @@ Laundry costs $1.75 wash, $1.75 dry, app-based. On noise: moderate; the building
 
 | Question | In corpus? | Best distance |
 |---|---|---|
-|  |  |  |
+| Do dining dollars roll over from spring to the following autumn? | Yes | 0.204 |
+| How quickly do student permits for the west parking lots sell out? | Yes | 0.198 |
+| How long does a student account stay active after graduation? | Yes | 0.368 |
+| Through which week can students drop a course? | Yes | 0.319 |
+| How many hours per week should students expect to spend outside class for CS 210? | Yes | 0.278 |
+| What is the capital of Mongolia? | No | 0.825 |
+| How do I change the oil in a diesel engine? | No | 0.934 |
+| Who won the 1994 World Cup? | No | 0.886 |
+| What is the recommended dosage of ibuprofen for a headache? | No | 0.844 |
+| How do I write a for loop in Rust? | No | 0.896 |
 
 ## How I Used AI
 
