@@ -27,6 +27,9 @@
 
      Milestone 5. -->
 
+This project builds a searchable unofficial student guide using RAG (Retrieval-Augmented Generation). It ingests advice documents from the campus life corpus, stores them in a vector database, and generates grounded answers with source citations while blocking off-topic queries. It answers questions about courses, parking, dining, student accounts, and other university topics. The system retrieves information from the campus-life documents and uses those documents to create an answer with a source.
+
+
 ## Chunking Strategy
 
 **Chunk size:** 26
@@ -172,9 +175,9 @@ from 0.198 to 0.368. The five out-of-scope questions had best distances from
 
      Milestone 5. -->
 
-**1.**
+**1.** I used AI to understand Milestone 3 and write the chunking code. Because the campus_life documents are short, I changed split_documents() in chunker.py to keep each complete document as one chunk with no overlap, so the information stays together and sentences are not split.
 
-**2.**
+**2.**  I used AI to choose five answerable questions from the corpus and give each an expects phrase. I also used AI to pressure-test the acceptance criteria so they had clear numbers or observable results and covered different parts of the system.
 
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
