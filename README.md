@@ -288,6 +288,39 @@ the question as pass.
 | 4 | Chunk quality | MET | All five sampled chunks were complete thoughts. |
 | 5 | Correct factual answers | MET | All five answers contained their expected phrases in all three runs. |
 
+### Critical check
+
+I also argued for the opposite verdict for each criterion:
+
+1. **Retrieved chunks contain the answer — target: 4 of 5.** The result was
+     5/5 in all three runs, so this is MET. The strongest case for MISSED is
+     that the scorer checks the answer text, not independently whether the
+     retrieved chunk contains the answer. I checked the retrieved sources and
+     found the answers in them, so I kept MET.
+
+2. **Every answer names a source — target: 5 of 5.** The result was 5/5 in
+     all three runs, so this is MET. The strongest case for MISSED is that an
+     answer could name a filename without truly using that file. The criterion
+     only requires a source name, and every answer included one, so MET is the
+     literal result.
+
+3. **The gate stops out-of-corpus questions — target: 4 of 5.** The gate
+     refused 5/5, so this is MET. The strongest case for MISSED is that the
+     out-of-scope questions were checked once rather than three times. That is
+     appropriate because retrieval and the gate are deterministic, and 5/5 is
+     above the target, so it remains MET.
+
+4. **Chunk quality — target: 4 of 5.** The five sampled chunks were 5/5
+     complete thoughts, so this is MET. The strongest case for MISSED is that
+     five samples cannot prove that all 88 chunks are good. The target asks for
+     five sampled chunks, however, and all five passed, so MET is supported.
+
+5. **Correct factual answers — target: 4 of 5.** The result was 5/5 in all
+     three runs, so this is MET. The strongest case for MISSED is that the
+     scorer only checks an expected phrase and a source name; it cannot prove
+     every sentence is fully grounded. For this criterion, every answer had
+     the expected phrase and a source, so MET is the result.
+
 ## Diagnoses
 
 <!-- For each miss: which stage caused it, and how. The stage alone isn't
