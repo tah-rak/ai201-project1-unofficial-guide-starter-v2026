@@ -206,15 +206,68 @@ from 0.198 to 0.368. The five out-of-scope questions had best distances from
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunk quality | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Correct factual answers | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
 <!-- Underneath, paste the REAL output for each criterion from one of your
      runs — the actual text your system produced, not a description of it.
      Name the file and function that produced it. -->
+
+### Evidence from the run
+
+Source: `results/run_2026-09-26_1809_before.md`, produced by
+`run_eval.py::run_once`.
+
+**Criterion 1 — retrieved chunks contained the answer:**
+
+```text
+Sources retrieved: admin_wifi_and_accounts.txt, admin_graduation_requirements.txt, admin_pass_fail_option.txt, admin_withdrawal_deadline.txt, money_jobs.txt
+A student account stays active for six months after you graduate.
+```
+
+**Criterion 2 — answers named a source:**
+
+```text
+A student account stays active for six months after you graduate.
+Source: admin_wifi_and_accounts.txt
+```
+
+**Criterion 3 — the gate refused out-of-scope questions:**
+
+```text
+Produced by: run_eval.py::check_out_of_scope, cutoff 0.6. Refused 5 of 5.
+What is the capital of Mongolia? | 0.825 | refused
+How do I change the oil in a diesel engine? | 0.934 | refused
+Who won the 1994 World Cup? | 0.886 | refused
+What is the recommended dosage of ibuprofen for a headache? | 0.844 | refused
+How do I write a for loop in Rust? | 0.896 | refused
+```
+
+**Criterion 4 — chunks were complete:**
+
+```text
+Source: admin_add_drop_deadline.txt
+Produced by: chunker.py::split_documents
+On the add/drop deadline
+
+You can add a course through the end of the second week. Dropping is a longer window — through the end of week six — but a drop after week two shows as a W on your transcript.
+```
+
+I checked the five sample chunks from `chunker.py::split_documents`; all five
+were complete thoughts, so the result was 5/5.
+
+**Criterion 5 — answers contained the expected phrase:**
+
+```text
+Students should expect to spend 8 to 10 hours a week outside class for CS 210.
+Source: course_cs_210_workload.txt
+```
+
+The answer contains the expected phrase `8 to 10 hours`, so the scorer marked
+the question as pass.
 
 ## Verdicts
 
@@ -229,11 +282,11 @@ from 0.198 to 0.368. The five out-of-scope questions had best distances from
 
 | # | Criterion | Verdict | How I decided |
 |---|---|---|---|
-| 1 |  |  |  |
-| 2 |  |  |  |
-| 3 |  |  |  |
-| 4 |  |  |  |
-| 5 |  |  |  |
+| 1 | Retrieved chunks contain the answer | MET | All five questions passed in all three runs. |
+| 2 | Every answer names a source | MET | All five answers named at least one source. |
+| 3 | Gate stops out-of-corpus questions | MET | The gate refused all five out-of-scope questions. |
+| 4 | Chunk quality | MET | All five sampled chunks were complete thoughts. |
+| 5 | Correct factual answers | MET | All five answers contained their expected phrases in all three runs. |
 
 ## Diagnoses
 
