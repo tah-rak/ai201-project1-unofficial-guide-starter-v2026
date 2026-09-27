@@ -179,6 +179,12 @@ from 0.198 to 0.368. The five out-of-scope questions had best distances from
 
 **2.**  I used AI to choose five answerable questions from the corpus and give each an expects phrase. I also used AI to pressure-test the acceptance criteria so they had clear numbers or observable results and covered different parts of the system.
 
+**3.** I used AI to compare the before and after results after changing the
+chunker. It helped me notice that the number of chunks increased from 88 to
+183 and that the CS 210 retrieval distance improved, but the overall pass
+rates stayed the same. I kept the change and recorded that some new chunks
+were only 36 characters long and may need more review.
+
 <!-- ── Stretch features ─────────────────────────────────────────────────────
      Doing one? Say so here BEFORE you start. A feature this README never
      claims earns nothing.
@@ -417,9 +423,21 @@ questions.
 
      Milestone 5. -->
 
+None of the five criteria were missed after the improvement. However, the new
+paragraph-based chunker created 183 chunks, including a shortest chunk of 36
+characters. Some chunks may be too small to provide enough context, even
+though the five sampled chunks passed. I stopped here because the evaluation
+did not show a failed criterion, but this is the next issue I would investigate.
+
 ## What I'd Do Differently
 
 <!-- Knowing what you know now — which of your five criteria would you write
      differently, and why?
 
      Milestone 5. -->
+
+I would make criterion 4 stricter. Instead of checking only five sampled
+chunks, I would check all 183 chunks after the improvement and require every
+chunk to be a complete thought with enough context. I would also make
+criterion 5 check whether the answer is fully supported by its cited document,
+not only whether it contains an expected phrase.
