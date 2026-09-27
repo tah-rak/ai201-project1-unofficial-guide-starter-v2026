@@ -341,6 +341,15 @@ I also argued for the opposite verdict for each criterion:
 
      Milestone 3. -->
 
+I did not miss any of the five criteria, so I did not find a failure in
+loading, chunking, embedding, retrieval, or generation. The targets were a
+little safe. My campus_life corpus has 88 short documents, averaging 317
+characters, and none is longer than 800 characters. Because of that, keeping
+each document as one chunk avoided sentence-splitting problems. Also, most
+criteria allowed one failure out of five, and the chunk test looked at only
+five samples. I would make criterion 4 stricter next time by checking all 88
+chunks instead of only five.
+
 ## The Improvement
 
 **What I changed:**
