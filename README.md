@@ -354,7 +354,16 @@ chunks instead of only five.
 
 **What I changed:**
 
+I changed `chunker.py::split_documents` from one document per chunk to
+paragraph-based chunks. I kept each document heading with its first paragraph
+and used no overlap.
+
 **Why I picked it:**
+
+The diagnosis showed that all 88 campus-life documents were already shorter
+than the starter's 800-character window, so the original chunking test was
+very easy. Paragraph-based chunks give retrieval smaller, more focused pieces
+to search.
 
 <!-- Connect it to a specific diagnosis above in one sentence. If you can't,
      you picked a fix because it sounded impressive. -->
@@ -366,13 +375,30 @@ chunks instead of only five.
 
 | Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
 |---|---|---|---|---|---|
-| 1. Retrieved chunk contains the answer | 4 of 5 |  |  |  |  |
-| 2. Every answer names a source | 5 of 5 |  |  |  |  |
-| 3. Gate stops out-of-corpus questions | 4 of 5 |  |  |  |  |
-| 4. | | | | | |
-| 5. | | | | | |
+| 1. Retrieved chunk contains the answer | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 2. Every answer names a source | 5 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 3. Gate stops out-of-corpus questions | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 4. Chunk quality | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
+| 5. Correct factual answers | 4 of 5 | 5/5 | 5/5 | 5/5 | MET |
 
 **Did it help?**
+
+The change helped retrieval for the CS 210 question: its best distance
+improved from 0.2784 before the change to 0.2403 after it. The other questions
+still passed, and the gate still refused 5 of 5 out-of-scope questions. The
+overall criterion scores stayed the same at 5/5, so the improvement was useful
+but did not change the final pass rates. It also created 183 chunks instead of
+88, with a shortest chunk of 36 characters, so paragraph splitting may create
+some chunks that are too small and should be reviewed further.
+
+**Evidence:**
+
+Before: `results/run_2026-09-26_1809_before.md` — 88 chunks, all five
+questions passed in all three runs.
+
+After: `results\run_2026-09-26_2033_after.md` — 183 chunks, all five
+questions passed in all three runs, and the gate refused 5 of 5 out-of-scope
+questions.
 
 <!-- Say plainly whether it did, and how you know. If it made things worse,
      say that — a change that backfired, honestly reported, earns full credit
