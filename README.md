@@ -556,3 +556,40 @@ Run 3 invalid requests: status_code=400, status_code=400, status_code=400
 All three runs met the targets. No diagnosis was needed for a missed
 criterion. The slowest valid request was 3,517.75 ms, below the 15-second
 limit, and all invalid requests were recorded with HTTP 400.
+
+**Diagnoses**
+
+All five criteria were MET in all three before trials, so there was no failed
+criterion to diagnose. The targets were deliberately generous: the latency
+target allowed 15 seconds and the token target allowed 500 tokens per request.
+The criterion I would tighten is criterion 5, changing the next target to an
+average of **350 tokens or fewer** per request. That would make the test more
+informative about prompt size while still allowing the model's answer to vary.
+
+**The Improvement**
+
+I reduced the default retrieval setting in `config.py` from 5 chunks to 3
+chunks. This keeps the extension within scope, because it changes no retrieval
+algorithm or document chunking; it only limits how much already-retrieved
+context is sent to generation. I chose this change because the token
+measurement showed that the original prompt size was the clearest opportunity
+to reduce operational cost.
+
+I rebuilt the index with the normal embedding model and reran the same
+three-trial procedure. The official after-trial records are the final 39
+records in `results/service_runs.jsonl`; an exploratory run was excluded
+because a smoke test had temporarily rebuilt the index with fake embeddings.
+
+| Criterion | Before Run 1 | Before Run 2 | Before Run 3 | After Run 1 | After Run 2 | After Run 3 |
+|---|---:|---:|---:|---:|---:|---:|
+| 1. Complete valid request records | 10/10 | 10/10 | 10/10 | 10/10 | 10/10 | 10/10 |
+| 2. Records with required fields | 10/10 | 10/10 | 10/10 | 10/10 | 10/10 | 10/10 |
+| 3. Empty input returns/logs 400 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 | 3/3 |
+| 4. Valid requests under 15 seconds | 10/10 | 10/10 | 10/10 | 10/10 | 10/10 | 10/10 |
+| 5. Average token usage | 412.8 | 409.4 | 406.3 | 299.5 | 300.7 | 298.7 |
+
+The improvement helped. Average token usage decreased by approximately 27%,
+from a 409.5-token average across the three before trials to a 299.6-token
+average across the three after trials. All five original criteria remained
+MET, and the maximum after latency was 4,513.24 ms, still below the original
+15-second target.
