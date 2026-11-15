@@ -141,3 +141,67 @@ Each question has a specific factual answer, such as "six months" or "week six,"
      The whole reason the originals stay visible is so someone can see what you
      said before you knew the answer.
      ───────────────────────────────────────────────────────────────────────── -->
+
+---
+
+# Capstone acceptance criteria
+
+These criteria apply to the Shape A extension: local deployment and structured
+instrumentation for the HTTP service. They are separate from the Unit 1
+criteria above.
+
+## 1. Every request is recorded
+
+For 10 of 10 `/ask` requests, `results/service_runs.jsonl` contains exactly
+one new JSON record.
+
+**Why this target:
+
+The purpose of the extension is to make the running service observable. A
+missing record would make one request impossible to diagnose after the fact, so
+the target is 10 of 10 rather than allowing an unrecorded request.
+
+## 2. Records contain the required evidence
+
+For 10 of 10 logged `/ask` requests, the record contains a timestamp, question,
+answer or error, HTTP status, and non-negative `latency_ms` value.
+
+**Why this target:
+
+These fields describe what came in, what came out, whether the request
+succeeded, and how long it took. Requiring all 10 records prevents a partial
+logger from appearing complete.
+
+## 3. Invalid input is handled and logged
+
+For 3 of 3 requests with an empty question, the service returns HTTP 400 and
+writes a record with `status_code` 400 and an empty `question`.
+
+**Why this target:
+
+An empty request is a simple failure a user can trigger without damaging the
+service. Three repeated trials show that failure handling is consistent, not a
+one-time result.
+
+## 4. Normal request latency stays bounded
+
+At least 9 of 10 valid `/ask` requests finish in 15 seconds or less, measured
+by the logged `latency_ms` value.
+
+**Why this target:
+
+The service uses a local embedding model and a hosted generation call. Fifteen
+seconds allows for normal model and network variation while still catching a
+request that hangs or becomes impractical for an interactive guide.
+
+## 5. Token use stays measurable and bounded
+
+The average `token_usage.total` across 10 valid `/ask` requests is no more than
+500 tokens per request.
+
+**Why this target:
+
+The service sends retrieved context to the generation model, so larger
+retrieval prompts increase measured usage. A 500-token average leaves room for
+the five retrieved chunks while detecting an unexpectedly large prompt or
+answer.

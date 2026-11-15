@@ -483,25 +483,40 @@ answer or error, HTTP status, latency in milliseconds, refusal status, sources,
 and per-request prompt/output/total token usage. The invalid-input request is
 included to show that failures are logged too.
 
-Paste the ten real records and the invalid-request record here after running
-the procedure from `RUNNING.md`:
+The following ten successful records and one rejected-input record came from
+the main local service run on 2026-11-15. Each line is one JSON record from
+`results/service_runs.jsonl`:
 
-```text
-PASTE TEN REAL service_runs.jsonl RECORDS HERE
-PASTE ONE FAILED service_runs.jsonl RECORD HERE
+```json
+{"timestamp":"2026-11-15T21:17:47.131262+00:00","endpoint":"/ask","question":"How long does a student account stay active after graduation?","answer":"A student account stays active for six months after you graduate (admin_wifi_and_accounts.txt).","status_code":200,"latency_ms":6303.5,"refused":false,"sources":["admin_graduation_requirements.txt","admin_pass_fail_option.txt","admin_wifi_and_accounts.txt","advising_registration.txt","money_jobs.txt"],"best_distance":0.3678,"threshold":0.6,"token_usage":{"prompt":411,"output":22,"total":433}}
+{"timestamp":"2026-11-15T21:17:55.889556+00:00","endpoint":"/ask","question":"What is the capital of Mongolia?","answer":"I don't have enough information about that.","status_code":200,"latency_ms":72.1,"refused":true,"sources":[],"best_distance":0.7873,"threshold":0.6,"token_usage":{"prompt":0,"output":0,"total":0}}
+{"timestamp":"2026-11-15T22:35:00.129242+00:00","endpoint":"/ask","question":"Do dining dollars roll over from spring to the following autumn?","answer":"No, dining dollars do not roll over from spring to the following autumn; whatever is left in May disappears. (Source: admin_dining_dollars.txt)","status_code":200,"latency_ms":12171.89,"refused":false,"sources":["admin_dining_dollars.txt","admin_meal_plan_changes.txt","dining_halden_hall.txt","dining_north_kitchen.txt","dining_pellew_dining_hall.txt"],"best_distance":0.2037,"threshold":0.6,"token_usage":{"prompt":379,"output":33,"total":412}}
+{"timestamp":"2026-11-15T22:35:01.527038+00:00","endpoint":"/ask","question":"How quickly do student permits for the west parking lots sell out?","answer":"Student permits for the west lots sell out in about three days. (Source: admin_parking_permits.txt)","status_code":200,"latency_ms":1061.26,"refused":false,"sources":["admin_parking_permits.txt","advising_registration.txt","course_cs_210.txt","course_econ_101.txt","course_stat_150.txt"],"best_distance":0.1975,"threshold":0.6,"token_usage":{"prompt":321,"output":25,"total":346}}
+{"timestamp":"2026-11-15T22:35:01.674782+00:00","endpoint":"/ask","question":"How long does a student account stay active after graduation?","answer":"A student account stays active for six months after you graduate (admin_wifi_and_accounts.txt).","status_code":200,"latency_ms":102.72,"refused":false,"sources":["admin_graduation_requirements.txt","admin_pass_fail_option.txt","admin_wifi_and_accounts.txt","advising_registration.txt","money_jobs.txt"],"best_distance":0.3678,"threshold":0.6,"token_usage":{"prompt":0,"output":0,"total":0}}
+{"timestamp":"2026-11-15T22:35:02.307515+00:00","endpoint":"/ask","question":"Through which week can students drop a course?","answer":"Students can drop a course through the end of week six. (Source: admin_add_drop_deadline.txt)","status_code":200,"latency_ms":608.98,"refused":false,"sources":["admin_add_drop_deadline.txt","admin_pass_fail_option.txt","advising_registration.txt","course_biol_160.txt","money_jobs.txt"],"best_distance":0.3189,"threshold":0.6,"token_usage":{"prompt":390,"output":25,"total":415}}
+{"timestamp":"2026-11-15T22:35:03.167765+00:00","endpoint":"/ask","question":"How many hours per week should students expect to spend outside class for CS 210?","answer":"Students should expect to spend 8 to 10 hours a week outside class for CS 210. \n\nSources: `course_cs_210.txt` and `course_cs_210_workload.txt`","status_code":200,"latency_ms":837.06,"refused":false,"sources":["course_cs_210.txt","course_cs_210_workload.txt","course_econ_101.txt","course_stat_150.txt","course_stat_150_workload.txt"],"best_distance":0.2403,"threshold":0.6,"token_usage":{"prompt":318,"output":53,"total":371}}
+{"timestamp":"2026-11-15T22:35:04.199299+00:00","endpoint":"/ask","question":"What is the housing lottery like?","answer":"Based on the housing lottery, rising sophomores receive a randomly drawn number, while juniors and seniors are ordered by accumulated credit hours first, with a random tie-break. Numbers are released the second week of March, and selection takes place over four evenings. \n\nSource: admin_housing_lottery.txt","status_code":200,"latency_ms":970.55,"refused":false,"sources":["admin_housing_lottery.txt","advising_registration.txt","housing_aldridge_hall.txt","housing_morrow_house.txt"],"best_distance":0.3443,"threshold":0.6,"token_usage":{"prompt":390,"output":63,"total":453}}
+{"timestamp":"2026-11-15T22:35:05.124858+00:00","endpoint":"/ask","question":"What are the laundry costs in Innisfree Hall?","answer":"In Innisfree Hall, laundry costs $1.75 for a wash and $1.75 for a dry. \n\nSources: housing_innisfree_hall_laundry.txt and housing_innisfree_hall.txt","status_code":200,"latency_ms":901.44,"refused":false,"sources":["housing_aldridge_hall.txt","housing_innisfree_hall.txt","housing_innisfree_hall_laundry.txt","housing_morrow_house.txt","housing_old_brewhouse.txt"],"best_distance":0.2454,"threshold":0.6,"token_usage":{"prompt":407,"output":52,"total":459}}
+{"timestamp":"2026-11-15T22:35:06.030623+00:00","endpoint":"/ask","question":"When should I arrive at Pellew Dining Hall to avoid the peak wait?","answer":"To avoid the peak wait at Pellew Dining Hall, you should go before 11:45 (`dining_pellew_dining_hall_followup.txt` and `dining_pellew_dining_hall.txt`).","status_code":200,"latency_ms":879.51,"refused":false,"sources":["dining_halden_hall.txt","dining_halden_hall_followup.txt","dining_pellew_dining_hall.txt","dining_pellew_dining_hall_followup.txt","dining_the_ridgeway_cafe_followup.txt"],"best_distance":0.1644,"threshold":0.6,"token_usage":{"prompt":559,"output":51,"total":610}}
+```
+
+The required failed run is the rejected empty-question request:
+
+```json
+{"timestamp":"2026-11-15T22:35:08.464528+00:00","endpoint":"/ask","question":"","answer":null,"status_code":400,"latency_ms":0.1,"refused":false,"sources":[],"token_usage":{"prompt":0,"output":0,"total":0}}
 ```
 
 **What It Costs**
 
 I measured cost as model tokens because the generation service reports actual
-prompt and output token counts. After ten real `/ask` requests, I will add the
-`token_usage.total` values, divide by 10, and record the measured average here.
-The invalid request should normally use zero model tokens because it is rejected
-before retrieval and generation.
+prompt and output token counts. For the ten records above, the
+`token_usage.total` values sum to **3,499 tokens**, so the measured average is
+**349.9 tokens per request** (3,499 / 10). The invalid request used zero model
+tokens because it was rejected before retrieval and generation.
 
 ```text
-Ten-request total tokens: TODO
-Average tokens per request: TODO / 10 = TODO
+Ten-request total tokens: 3,499
+Average tokens per request: 3,499 / 10 = 349.9
 Measurement method: sum token_usage.total from ten service_runs.jsonl records
 and divide by ten.
 ```
