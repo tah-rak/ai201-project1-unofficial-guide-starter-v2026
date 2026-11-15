@@ -20,20 +20,34 @@ Why this exists: `app.py` runs once and exits, which is fine on your laptop
 and impossible to deploy. A hosted service has to stay up and wait for
 requests. This is the smallest thing that does that.
 
-⚠️ There is deliberately no logging, no timing and no metrics in this file.
-Unit 9 has you build the structured log yourself — the request line, the
-timing field everyone skips, the whole instrument-before-you-deploy exercise.
-Shipping a logger here would hand you the answer to that. Add yours in unit 9;
-this file stays the bare shell until then.
+Each request is recorded as one JSON object in `results/service_runs.jsonl`.
+The record includes the input, output, status, latency, sources, and the token
+usage measured during that request.
 """
 
+import datetime as dt
+import json
 import os
+import time
 
 from flask import Flask, jsonify, request
 
 import config
 
 app = Flask(__name__)
+
+
+def _write_service_log(record: dict) -> None:
+    config.SERVICE_LOG.parent.mkdir(exist_ok=True)
+    with config.SERVICE_LOG.open("a", encoding="utf-8") as log:
+        log.write(json.dumps(record, ensure_ascii=True) + "\n")
+
+
+def _usage_delta(before: dict[str, int], after: dict[str, int]) -> dict[str, int]:
+    return {
+        key: after.get(key, 0) - before.get(key, 0)
+        for key in ("prompt", "output", "total")
+    }
 
 
 @app.get("/health")
@@ -72,11 +86,27 @@ def ask():
     `"refused": true` so whatever calls this can tell the two apart.
     """
     from app import ask_pipeline
+    import generate
 
+    started = time.perf_counter()
+    usage_before = generate.token_counts()
     payload = request.get_json(silent=True) or {}
     question = (payload.get("question") or "").strip()
 
     if not question:
+        _write_service_log(
+            {
+                "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+                "endpoint": "/ask",
+                "question": "",
+                "answer": None,
+                "status_code": 400,
+                "latency_ms": round((time.perf_counter() - started) * 1000, 2),
+                "refused": False,
+                "sources": [],
+                "token_usage": _usage_delta(usage_before, generate.token_counts()),
+            }
+        )
         return (
             jsonify(
                 {
@@ -90,8 +120,38 @@ def ask():
     try:
         outcome = ask_pipeline(question, corpus=config.CORPUS)
     except Exception as exc:  # noqa: BLE001 — a reader gets this, not a traceback
+        _write_service_log(
+            {
+                "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+                "endpoint": "/ask",
+                "question": question,
+                "answer": None,
+                "status_code": 500,
+                "latency_ms": round((time.perf_counter() - started) * 1000, 2),
+                "refused": False,
+                "sources": [],
+                "error": f"{type(exc).__name__}: {exc}",
+                "token_usage": _usage_delta(usage_before, generate.token_counts()),
+            }
+        )
         return jsonify({"error": f"{type(exc).__name__}: {exc}"}), 500
 
+    token_usage = _usage_delta(usage_before, generate.token_counts())
+    _write_service_log(
+        {
+            "timestamp": dt.datetime.now(dt.timezone.utc).isoformat(),
+            "endpoint": "/ask",
+            "question": question,
+            "answer": outcome["answer"],
+            "status_code": 200,
+            "latency_ms": round((time.perf_counter() - started) * 1000, 2),
+            "refused": outcome["refused"],
+            "sources": outcome["sources"],
+            "best_distance": round(outcome["best_distance"], 4),
+            "threshold": outcome["threshold"],
+            "token_usage": token_usage,
+        }
+    )
     return jsonify(
         {
             "question": question,
@@ -101,6 +161,7 @@ def ask():
             "best_distance": round(outcome["best_distance"], 4),
             "threshold": outcome["threshold"],
             "corpus": config.CORPUS,
+            "token_usage": token_usage,
         }
     )
 

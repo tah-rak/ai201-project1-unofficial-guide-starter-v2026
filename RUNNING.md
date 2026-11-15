@@ -192,19 +192,20 @@ own machine alone.
 
 ---
 
-## Running it somewhere else — **unit 9**
-
-Unit 1 doesn't need this. It's here because the file it describes ships in the
-starter, and finding out in unit 9 that it exists is worse than reading one
-table now.
+## Running it locally with logs
 
 `serve.py` puts the same pipeline behind HTTP, so it can run as a service that
 stays up instead of a command that exits.
 
 ```bash
-python serve.py                    # locally, on port 5000
-gunicorn serve:app                 # the way a host starts it
+python app.py index               # once, after setup or corpus changes
+python serve.py                   # starts locally on port 5000
 ```
+
+Run it from the repository root in an activated Python 3.11–3.13 virtual
+environment. The dependencies are pinned in `requirements.txt`, and the
+embedding model downloads on its first index run. The service reads
+`GEMINI_API_KEY` from `.env`.
 
 | Thing | What it does |
 |---|---|
@@ -212,13 +213,16 @@ gunicorn serve:app                 # the way a host starts it
 | `GET /health` | Says whether the service is up and whether an index exists to search |
 | `PORT` | The port to listen on. Hosts set it for you; on your laptop it defaults to 5000 |
 | `AI201_DEBUG=1` | Flask's reloader and debugger. Local only — never set it on a deployed service |
+| `results/service_runs.jsonl` | One structured JSON record per `/ask` request, including timestamp, input, output, latency, status, sources, and token usage |
 
 > The free hosting tier sleeps after about fifteen minutes with no traffic, so
 > the first request after a quiet spell waits roughly a minute for it to wake
 > up. That's the tier, not your code.
 
-`serve.py` has **no logging and no timing in it on purpose** — building that is
-the unit 9 exercise, and it is easier to instrument something you wrote.
+Each `/ask` request appends one JSON record to `results/service_runs.jsonl`.
+The `token_usage.total` value is the measured prompt-plus-output token count
+for that request; refused questions normally use zero model tokens. The file
+is intentionally kept in `results/` so it can be committed as evidence.
 
 ---
 
