@@ -506,13 +506,13 @@ The required failed run is the rejected empty-question request:
 {"timestamp":"2026-11-15T22:35:08.464528+00:00","endpoint":"/ask","question":"","answer":null,"status_code":400,"latency_ms":0.1,"refused":false,"sources":[],"token_usage":{"prompt":0,"output":0,"total":0}}
 ```
 
-**What It Costs**
+**Initial Cost Measurement**
 
-I measured cost as model tokens because the generation service reports actual
-prompt and output token counts. For the ten records above, the
-`token_usage.total` values sum to **3,499 tokens**, so the measured average is
-**349.9 tokens per request** (3,499 / 10). The invalid request used zero model
-tokens because it was rejected before retrieval and generation.
+The initial ten-request sample measured model tokens before the improvement.
+The generation service reports actual prompt and output token counts. The
+`token_usage.total` values summed to **3,499 tokens**, or **349.9 tokens per
+request** (3,499 / 10). The invalid request used zero model tokens because it
+was rejected before retrieval and generation.
 
 ```text
 Ten-request total tokens: 3,499
@@ -593,3 +593,47 @@ from a 409.5-token average across the three before trials to a 299.6-token
 average across the three after trials. All five original criteria remained
 MET, and the maximum after latency was 4,513.24 ms, still below the original
 15-second target.
+
+**What It Costs**
+
+The measured post-improvement cost is **299.6 model tokens per valid request**,
+calculated from the three after-trial averages:
+`(299.5 + 300.7 + 298.7) / 3 = 299.6`. Assuming 100 people each ask one
+question per day, the measured daily usage would be
+`299.6 tokens/request * 100 requests = 29,960 tokens per day`; this is a token
+measurement, not a dollar estimate.
+
+**What's Still Broken**
+
+All five criteria were met, but criterion 5 was set too low: its 500-token
+limit did not challenge the original system, whose before-trial average was
+already below 500. I would tighten it to an average of 350 tokens or fewer,
+because the improved system averaged 299.6 while preserving the answer and
+source fields. I stopped after one improvement because the required
+operational extension and its measurement were complete; I did not add a
+second optimization that would make the before/after comparison harder to
+interpret.
+
+**What I Would Do Next**
+
+I would first add a small automated report that reads `service_runs.jsonl` and
+calculates request counts, failure rates, latency percentiles, and token
+averages. That would make repeated deployments easier to compare without
+manually extracting values from the log.
+
+**How I Used AI**
+
+I used AI to review the existing service structure and identify the smallest
+instrumentation point: the `/ask` route in `serve.py`, with token deltas read
+from the existing counters in `generate.py`. I kept the implementation local
+to the existing pipeline instead of adding a new logging service.
+
+I also used AI to check the acceptance criteria against the self-check
+questions. I changed vague operational goals into measurable targets for
+record counts, required fields, HTTP 400 failures, latency, and token usage,
+then verified the targets using the JSONL records.
+
+When the first after-test produced refusals, I used the recorded distances to
+diagnose that the smoke test had rebuilt the index with fake embeddings. I
+rebuilt the index with the normal embedder and reran the trials, excluding the
+invalid exploratory records from the official comparison.
