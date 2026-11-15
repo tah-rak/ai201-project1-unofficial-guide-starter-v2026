@@ -520,3 +520,39 @@ Average tokens per request: 3,499 / 10 = 349.9
 Measurement method: sum token_usage.total from ten service_runs.jsonl records
 and divide by ten.
 ```
+
+**Run Log and Verdicts**
+
+I ran the five Capstone criteria three separate times against the local
+`serve.py::ask` endpoint. Each trial sent 10 valid requests and 3 empty
+requests. The source records are in
+`results/service_runs.jsonl`; the three trials are the final 39 records.
+
+| Criterion | Target | Run 1 | Run 2 | Run 3 | Verdict |
+|---|---|---:|---:|---:|---|
+| 1. Every request is recorded | 10 of 10 | 10/10 | 10/10 | 10/10 | MET |
+| 2. Records contain required evidence | 10 of 10 | 10/10 | 10/10 | 10/10 | MET |
+| 3. Invalid input is handled and logged | 3 of 3 | 3/3 | 3/3 | 3/3 | MET |
+| 4. Normal request latency stays bounded | 9 of 10 under 15s | 10/10 | 10/10 | 10/10 | MET |
+| 5. Token use stays measurable and bounded | average <= 500 | 412.8 | 409.4 | 406.3 | MET |
+
+Evidence extracted from `results/service_runs.jsonl`:
+
+```text
+Produced by: serve.py::ask
+Run 1 valid request totals: 434, 0, 431, 432, 476, 377, 457, 469, 602, 450
+Run 1 latency_ms: 3517.75, 91.31, 1152.69, 780.92, 726.44, 844.86, 2385.19, 758.67, 743.21, 722.11
+Run 1 invalid requests: status_code=400, status_code=400, status_code=400
+
+Run 2 valid request totals: 434, 0, 416, 429, 473, 377, 456, 459, 600, 450
+Run 2 latency_ms: 737.13, 81.24, 631.93, 726.36, 1344.63, 657.52, 734.09, 735.49, 650.41, 638.12
+Run 2 invalid requests: status_code=400, status_code=400, status_code=400
+
+Run 3 valid request totals: 441, 0, 426, 429, 417, 377, 455, 470, 603, 445
+Run 3 latency_ms: 1366.90, 95.28, 676.21, 738.47, 656.01, 724.71, 723.91, 886.39, 1032.31, 1249.97
+Run 3 invalid requests: status_code=400, status_code=400, status_code=400
+```
+
+All three runs met the targets. No diagnosis was needed for a missed
+criterion. The slowest valid request was 3,517.75 ms, below the 15-second
+limit, and all invalid requests were recorded with HTTP 400.
