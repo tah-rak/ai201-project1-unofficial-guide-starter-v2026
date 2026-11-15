@@ -441,3 +441,27 @@ chunks, I would check all 183 chunks after the improvement and require every
 chunk to be a complete thought with enough context. I would also make
 criterion 5 check whether the answer is fully supported by its cited document,
 not only whether it contains an expected phrase.
+
+## Capstone
+
+**The System**
+
+I am extending The Unofficial Guide, the existing RAG student-guide system in
+this repository. It already loads campus-life documents, retrieves relevant
+chunks, generates grounded answers, and exposes the pipeline through
+`serve.py`.
+
+**The Shape**
+
+I chose **Shape A: deploy and instrument**. I will use the existing HTTP
+service as a documented local deployment, start it with one command, and add
+structured request logging with timestamps, questions, answers, and
+end-to-end latency. I will also measure the cost of a run using the model
+usage data already reported by the generation layer.
+
+**Out of Scope**
+
+I am not adding a second retrieval strategy, changing the chunking strategy,
+or rebuilding the command-line or web interface. I will focus only on making
+the existing run path reproducible and making its behavior and cost visible
+after a session.
