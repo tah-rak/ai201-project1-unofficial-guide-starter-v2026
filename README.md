@@ -465,3 +465,43 @@ I am not adding a second retrieval strategy, changing the chunking strategy,
 or rebuilding the command-line or web interface. I will focus only on making
 the existing run path reproducible and making its behavior and cost visible
 after a session.
+
+**Milestone 3 — Run Path**
+
+I chose the local-with-logs path. From a clean checkout, the service is started
+with `python serve.py` after the one-time `python app.py index` command. The
+environment needs Python 3.11–3.13, the dependencies in `requirements.txt`, a
+local `.env` containing `GEMINI_API_KEY`, and the bundled embedding model,
+which downloads during the first index run. The complete Windows Command
+Prompt procedure is in `RUNNING.md`.
+
+**Instrumentation**
+
+Each `/ask` request writes one JSON record to
+`results/service_runs.jsonl`. Records include the UTC timestamp, question,
+answer or error, HTTP status, latency in milliseconds, refusal status, sources,
+and per-request prompt/output/total token usage. The invalid-input request is
+included to show that failures are logged too.
+
+Paste the ten real records and the invalid-request record here after running
+the procedure from `RUNNING.md`:
+
+```text
+PASTE TEN REAL service_runs.jsonl RECORDS HERE
+PASTE ONE FAILED service_runs.jsonl RECORD HERE
+```
+
+**What It Costs**
+
+I measured cost as model tokens because the generation service reports actual
+prompt and output token counts. After ten real `/ask` requests, I will add the
+`token_usage.total` values, divide by 10, and record the measured average here.
+The invalid request should normally use zero model tokens because it is rejected
+before retrieval and generation.
+
+```text
+Ten-request total tokens: TODO
+Average tokens per request: TODO / 10 = TODO
+Measurement method: sum token_usage.total from ten service_runs.jsonl records
+and divide by ten.
+```

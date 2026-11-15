@@ -197,15 +197,39 @@ own machine alone.
 `serve.py` puts the same pipeline behind HTTP, so it can run as a service that
 stays up instead of a command that exits.
 
-```bash
-python app.py index               # once, after setup or corpus changes
-python serve.py                   # starts locally on port 5000
+```cmd
+python app.py index
+python serve.py
 ```
 
 Run it from the repository root in an activated Python 3.11–3.13 virtual
 environment. The dependencies are pinned in `requirements.txt`, and the
 embedding model downloads on its first index run. The service reads
 `GEMINI_API_KEY` from `.env`.
+
+For Windows Command Prompt:
+
+```cmd
+cd /d "C:\path\to\this\repository"
+call .venv\Scripts\activate.bat
+python app.py index
+python serve.py
+```
+
+Leave `python serve.py` running. In a second Command Prompt window, check the
+service and send requests:
+
+```cmd
+cd /d "C:\path\to\this\repository"
+call .venv\Scripts\activate.bat
+curl.exe http://localhost:5000/health
+curl.exe -X POST http://localhost:5000/ask -H "Content-Type: application/json" -d "{\"question\":\"How long does a student account stay active after graduation?\"}"
+curl.exe -X POST http://localhost:5000/ask -H "Content-Type: application/json" -d "{}"
+type results\service_runs.jsonl
+```
+
+The last request is intentionally invalid. It should return HTTP 400 and still
+create a structured failure record in `results/service_runs.jsonl`.
 
 | Thing | What it does |
 |---|---|
